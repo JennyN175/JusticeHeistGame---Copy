@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class computer : MonoBehaviour
+public class computer3 : MonoBehaviour
 {
     bool hasCollided = false;
-    GameObject ePrompt;
-    GameObject ePromptSprite;
+    GameObject ePrompt3;
+    GameObject ePromptSprite3;
     GameObject thePlayer;
     player playerScript;
     float tCycle;
@@ -16,7 +16,7 @@ public class computer : MonoBehaviour
         if (col.gameObject.tag == "Player")
         {
             Debug.Log("Collided");
-            ePrompt.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            ePrompt3.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
             hasCollided = true;
         }
     }
@@ -25,7 +25,7 @@ public class computer : MonoBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            ePrompt.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+            ePrompt3.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
             hasCollided = false;
         }
     }
@@ -40,7 +40,7 @@ public class computer : MonoBehaviour
 
         if (tCycle - t <= 1)
         { // Spins during the last second
-            ePromptSprite.transform.Rotate(0, 0, 180 * Time.deltaTime);
+            ePromptSprite3.transform.Rotate(0, 0, 180 * Time.deltaTime);
 
         }
     }
@@ -48,11 +48,11 @@ public class computer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ePrompt = GameObject.Find("e_prompt");
-        ePromptSprite = GameObject.Find("ePromptSprite");
+        ePrompt3 = GameObject.Find("e_prompt3");
+        ePromptSprite3 = GameObject.Find("ePromptSprite3");
         thePlayer = GameObject.FindGameObjectWithTag("Player");
         playerScript = thePlayer.GetComponent<player>();
-        ePrompt.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+        ePrompt3.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
     }
 
     // Update is called once per frame

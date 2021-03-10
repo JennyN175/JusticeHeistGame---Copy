@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
-public class guard : MonoBehaviour
+public class guard2 : MonoBehaviour
 {
     public Transform[] waypoints;
     int currentWaypointID = 0;
@@ -20,8 +20,8 @@ public class guard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        waypoint = GameObject.Find("waypointMarker");
-        viewpoint = GameObject.Find("pivotviewpoint");
+        waypoint = GameObject.Find("waypointMarker2");
+        viewpoint = GameObject.Find("pivotviewpoint2");
 
     }
 
@@ -41,9 +41,9 @@ public class guard : MonoBehaviour
     void Update()
     {
         RotateTowardsTarget();
-        
+
         distance = Vector2.Distance(GetComponent<Rigidbody2D>().position, waypoint.transform.position);
-        
+
         if (distance < nextWaypointDistance)
         {
             if (currentWaypointID <= waypoints.Length)
@@ -54,7 +54,7 @@ public class guard : MonoBehaviour
             {
                 currentWaypointID = 0;
             }
-            waypoint.transform.position = waypoints[currentWaypointID].transform.position; 
+            waypoint.transform.position = waypoints[currentWaypointID].transform.position;
         }
 
     }

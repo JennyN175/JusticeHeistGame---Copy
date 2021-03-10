@@ -6,8 +6,10 @@ public class player : MonoBehaviour
 {
     public GameObject playerChar;
     public GameObject wasdPrompt;
-    float speed = 0.03f;
+    public TMPro.TextMeshProUGUI counterText;
+    float speed = 0.05f;
     bool showWASDInstructionsOnce;
+    public int codeCounter = 0;
     float instructionDisappearDistance;
     Vector3 startPos;
 
@@ -18,12 +20,12 @@ public class player : MonoBehaviour
         startPos = transform.position;
         playerChar = GameObject.FindGameObjectWithTag("Player");
         wasdPrompt = GameObject.Find("wasd_prompt");
-
     }
 
     // Update is called once per frame
     void Update()
     {
+        counterText.text = "" + codeCounter;
         Vector3 pos = transform.position;
 
         //If the player has just started the game, show WASD instructions
