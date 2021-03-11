@@ -6,6 +6,7 @@ public class FieldOfView : MonoBehaviour
 {
     /*Referenced from https://www.youtube.com/watch?v=rQG9aUWarwE */
 
+    public bool lostGame = false;
     public float viewRadius;
     [Range(0, 360)]
     public float viewAngle;
@@ -65,6 +66,7 @@ public class FieldOfView : MonoBehaviour
                 {
                     print("target found");
                     visibleTargets.Add(target);
+                    lostGame = true;
                 }
             }
         }
