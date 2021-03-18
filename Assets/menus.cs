@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class menus : MonoBehaviour
 {
+    public float starttime;
+
     Image mainMenu, bgImage, playButtonImg, gameOverMenu, restartButtonImg, winMenu, replayButtonImg;
     Button playButton, restartButton, replayButton;
-    bool gameStarted = false;
+    public bool gameStarted = false;
     public bool gameRestarted = false;
 
     GameObject thePlayer;
@@ -16,31 +18,38 @@ public class menus : MonoBehaviour
     FieldOfView fovScript, fovScript2, fovScript3, fovScript4;
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
 
+    //public AudioSource caughtAudio, winAudio;
     // Start is called before the first frame update
     void Start()
     {
         thePlayer = GameObject.FindGameObjectWithTag("Player");
         playerScript = thePlayer.GetComponent<player>();
 
+        //Get game objects associated with main menu
         playButton = GameObject.Find("playButton").GetComponent<Button>();
         playButtonImg = GameObject.Find("playButton").GetComponent<Image>();
         mainMenu = GameObject.Find("mainMenu").GetComponent<Image>();
         bgImage = GameObject.Find("background").GetComponent<Image>();
 
+        //Get game objects associated with win menu
         winMenu = GameObject.Find("winMenu").GetComponent<Image>();
         replayButton = GameObject.Find("replayButton").GetComponent<Button>();
         replayButtonImg = GameObject.Find("replayButton").GetComponent<Image>();
 
+        //Get game objects associated with game over menu
         gameOverMenu = GameObject.Find("gameOver").GetComponent<Image>();
         restartButton = GameObject.Find("restartButton").GetComponent<Button>();
         restartButtonImg = GameObject.Find("restartButton").GetComponent<Image>();
 
+        //Get all guards' field of view scripts in order to access their variables (specifically the lostGame boolean)
         GetFovOfAllGuards();
 
+        //Add button listeners
         playButton.onClick.AddListener(playClicked);
         restartButton.onClick.AddListener(restartClicked);
         replayButton.onClick.AddListener(replayClicked);
 
+        //On starting, hide the game over menu and win menu
         HideGameOverMenu();
         HideWinMenu();
         bgImage.enabled = true;
@@ -67,11 +76,13 @@ public class menus : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //If the player clicks the play button, hide the start menu
         if (gameStarted)
         {
             HideStartMenu();
         }
 
+        //If the player restarts the game after losing, hide game over menu and reset the game
         if (gameRestarted)
         {
             HideGameOverMenu();
@@ -84,11 +95,13 @@ public class menus : MonoBehaviour
             gameRestarted = false;
         }
 
+        //If the player walks into any of the guards' field of views, show the gameover menu
         if (fovScript.lostGame || fovScript2.lostGame || fovScript3.lostGame || fovScript4.lostGame)
         {
             ShowGameOverMenu();
         }
 
+        //If the player gets all 3 computer codes, show the win menu
         if(playerScript.codeCounter == 3)
         {
             ShowWinMenu();

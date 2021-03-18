@@ -15,6 +15,7 @@ public class computer : MonoBehaviour
     FieldOfView fovScript, fovScript2, fovScript3, fovScript4;
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
 
+    //If player is near computer, ePrompt shows
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.tag == "Player")
@@ -25,6 +26,7 @@ public class computer : MonoBehaviour
         }
     }
 
+    //If player is not near computer, ePrompt is hidden
     void OnCollisionExit2D(Collision2D col)
     {
         if (col.gameObject.tag == "Player")
@@ -66,6 +68,8 @@ public class computer : MonoBehaviour
     void Update()
     {
         AnimateSpriteSpinning();
+
+        //Player collects computer code if collided with object while pressing "E"
         if (hasCollided && Input.GetKeyDown(KeyCode.E) && !hasBeenCollected)
         {
             Debug.Log("collected");
@@ -73,6 +77,7 @@ public class computer : MonoBehaviour
             hasBeenCollected = true;
         }
 
+        //If the computer has been collected, the computer sprite and ePrompt will not show
         if (hasBeenCollected)
         {
             ePrompt.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
@@ -95,6 +100,7 @@ public class computer : MonoBehaviour
         
     }
 
+    //Get all guards' field of view scripts in order to access their variables (specifically the lostGame boolean)
     void GetFovOfAllGuards()
     {
         fovScriptGetter = GameObject.Find("pivotviewpoint");

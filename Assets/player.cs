@@ -7,7 +7,7 @@ public class player : MonoBehaviour
     public GameObject playerChar;
     public GameObject wasdPrompt;
     public TMPro.TextMeshProUGUI counterText;
-    float speed = 0.06f;
+    float speed = 0.08f;
     bool showWASDInstructionsOnce;
     public bool hasWon = false;
     public int codeCounter = 0;
@@ -16,6 +16,9 @@ public class player : MonoBehaviour
     Vector3 pos;
     Vector3 restartPos;
 
+    float sprintSpeed = 0.16f;
+
+    //Getting sprites
     public Sprite upSprite, downSprite, leftSprite, rightSprite, upLeftSprite, downLeftSprite, upRightSprite, downRightSprite;
     SpriteRenderer spriteRenderer;
     public GameObject playerSprite;
@@ -23,17 +26,20 @@ public class player : MonoBehaviour
     FieldOfView fovScript, fovScript2, fovScript3, fovScript4;
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
 
+    public AudioSource audioSource;
+
     // Start is called before the first frame update
     void Start()
     {
         playerSprite = GameObject.Find("PlayerChar_front");
         spriteRenderer = playerSprite.GetComponent<SpriteRenderer>();
 
-        showWASDInstructionsOnce = true;
+        showWASDInstructionsOnce = true; //show WASD instructions on start
         startPos = transform.position;
         playerChar = GameObject.FindGameObjectWithTag("Player");
         wasdPrompt = GameObject.Find("wasd_prompt");
 
+        //Get all guards' field of view scripts in order to access their variables (specifically the lostGame boolean)
         GetFovOfAllGuards();
     }
 
@@ -53,13 +59,21 @@ public class player : MonoBehaviour
         if (showWASDInstructionsOnce)
         {
             instructionDisappearDistance = Vector3.Distance(startPos, pos);
+            if (instructionDisappearDistance < 5f)
+            {
+                audioSource.Play(); //Plays audio when player moves past certain point (will modify and fix this later)
+                
+            }
         }
+
 
         //WASD instructions disappear after player travels 5f distance
         if (instructionDisappearDistance > 5f)
         {
             wasdPrompt.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
         }
+
+
 
         //If player lost the game, return to the start position
         if ((fovScript.lostGame == true) || (fovScript2.lostGame == true) || (fovScript3.lostGame == true) || (fovScript4.lostGame == true))
@@ -78,28 +92,58 @@ public class player : MonoBehaviour
         PlayerWalk();
     }
 
+    //Player walking function
     void PlayerWalk()
     {
         if (Input.GetKey("w"))
         {
-            spriteRenderer.sprite = upSprite;
-            pos += Vector3.up * speed;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                pos += Vector3.up * sprintSpeed; //If left shift is pressed, player sprints
+            }
+            else
+            {
+                pos += Vector3.up * speed;
+            }
+            spriteRenderer.sprite = upSprite; //Sprite
         }
         if (Input.GetKey("s"))
         {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                pos += Vector3.down * sprintSpeed;
+            }
+            else
+            {
+                pos += Vector3.down * speed;
+            }
             spriteRenderer.sprite = downSprite;
-            pos += Vector3.down * speed;
         }
         if (Input.GetKey("d"))
         {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                pos += Vector3.right * sprintSpeed;
+            }
+            else
+            {
+                pos += Vector3.right * speed;
+            }
             spriteRenderer.sprite = rightSprite;
-            pos += Vector3.right * speed;
         }
         if (Input.GetKey("a"))
         {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                pos += Vector3.left * sprintSpeed;
+            }
+            else
+            {
+                pos += Vector3.left * speed;
+            }
             spriteRenderer.sprite = leftSprite;
-            pos += Vector3.left * speed;
         }
+
         if (Input.GetKey("w") && Input.GetKey("a"))
         {
             spriteRenderer.sprite = upLeftSprite;
