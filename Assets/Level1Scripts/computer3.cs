@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class computer3 : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class computer3 : MonoBehaviour
 
     FieldOfView fovScript, fovScript2, fovScript3, fovScript4;
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
+
+    string sceneName;
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -52,12 +55,23 @@ public class computer3 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Scene currentScene = SceneManager.GetActiveScene();
+        sceneName = currentScene.name;
+
         ePrompt3 = GameObject.Find("e_prompt3");
         ePromptSprite3 = GameObject.Find("ePromptSprite3");
         thePlayer = GameObject.FindGameObjectWithTag("Player");
         playerScript = thePlayer.GetComponent<player>();
 
-        GetFovOfAllGuards();
+        if (sceneName == "scene1")
+        {
+            GetFovOfAllGuardsLevel1();
+        }
+
+        if (sceneName == "scene2")
+        {
+            GetFovOfAllGuards();
+        }
 
         ePrompt3.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
     }
@@ -79,10 +93,22 @@ public class computer3 : MonoBehaviour
             ePromptSprite3.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
         }
 
-        if ((fovScript.lostGame && hasBeenCollected) || (fovScript2.lostGame && hasBeenCollected) || (fovScript3.lostGame && hasBeenCollected) || (fovScript4.lostGame && hasBeenCollected))
+        if (sceneName == "scene1")
         {
-            ePromptSprite3.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
-            hasBeenCollected = false;
+            if ((fovScript.lostGame && hasBeenCollected) || (fovScript3.lostGame && hasBeenCollected))
+            {
+                ePromptSprite3.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                hasBeenCollected = false;
+            }
+        }
+
+        if (sceneName == "scene2")
+        {
+            if ((fovScript.lostGame && hasBeenCollected) || (fovScript2.lostGame && hasBeenCollected) || (fovScript3.lostGame && hasBeenCollected) || (fovScript4.lostGame && hasBeenCollected))
+            {
+                ePromptSprite3.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                hasBeenCollected = false;
+            }
         }
 
         if (playerScript.codeCounter == 0)
@@ -103,5 +129,14 @@ public class computer3 : MonoBehaviour
         fovScript2 = fovScriptGetter2.GetComponent<FieldOfView>();
         fovScript3 = fovScriptGetter3.GetComponent<FieldOfView>();
         fovScript4 = fovScriptGetter4.GetComponent<FieldOfView>();
+    }
+
+    void GetFovOfAllGuardsLevel1()
+    {
+        fovScriptGetter = GameObject.Find("pivotviewpoint");
+        fovScriptGetter3 = GameObject.Find("pivotviewpoint (1)");
+
+        fovScript = fovScriptGetter.GetComponent<FieldOfView>();
+        fovScript3 = fovScriptGetter3.GetComponent<FieldOfView>();
     }
 }

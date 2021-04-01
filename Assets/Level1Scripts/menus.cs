@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class menus : MonoBehaviour
 {
@@ -18,10 +19,15 @@ public class menus : MonoBehaviour
     FieldOfView fovScript, fovScript2, fovScript3, fovScript4;
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
 
+    string sceneName;
+
     //public AudioSource caughtAudio, winAudio;
     // Start is called before the first frame update
     void Start()
     {
+        Scene currentScene = SceneManager.GetActiveScene();
+        sceneName = currentScene.name;
+
         thePlayer = GameObject.FindGameObjectWithTag("Player");
         playerScript = thePlayer.GetComponent<player>();
 
@@ -42,7 +48,15 @@ public class menus : MonoBehaviour
         restartButtonImg = GameObject.Find("restartButton").GetComponent<Image>();
 
         //Get all guards' field of view scripts in order to access their variables (specifically the lostGame boolean)
-        GetFovOfAllGuards();
+        if (sceneName == "scene1")
+        {
+            GetFovOfAllGuardsLevel1();
+        }
+
+        if (sceneName == "scene2")
+        {
+            GetFovOfAllGuards();
+        }
 
         //Add button listeners
         playButton.onClick.AddListener(playClicked);
@@ -83,28 +97,64 @@ public class menus : MonoBehaviour
         }
 
         //If the player restarts the game after losing, hide game over menu and reset the game
-        if (gameRestarted)
+        if (sceneName == "scene1")
         {
-            HideGameOverMenu();
-            HideWinMenu();
-            playerScript.codeCounter = 0;
-            fovScript.lostGame = false;
-            fovScript2.lostGame = false;
-            fovScript3.lostGame = false;
-            fovScript4.lostGame = false;
-            gameRestarted = false;
+            if (gameRestarted)
+            {
+                HideGameOverMenu();
+                HideWinMenu();
+                playerScript.codeCounter = 0;
+                fovScript.lostGame = false;
+                fovScript3.lostGame = false;
+                gameRestarted = false;
+            }
+        }
+
+        if (sceneName == "scene2")
+        {
+            if (gameRestarted)
+            {
+                HideGameOverMenu();
+                HideWinMenu();
+                SceneManager.LoadScene("scene1");
+                playerScript.codeCounter = 0;
+                fovScript.lostGame = false;
+                fovScript2.lostGame = false;
+                fovScript3.lostGame = false;
+                fovScript4.lostGame = false;
+                gameRestarted = false;
+            }
         }
 
         //If the player walks into any of the guards' field of views, show the gameover menu
-        if (fovScript.lostGame || fovScript2.lostGame || fovScript3.lostGame || fovScript4.lostGame)
+        if (sceneName == "scene1")
         {
-            ShowGameOverMenu();
+            if (fovScript.lostGame || fovScript3.lostGame)
+            {
+                ShowGameOverMenu();
+            }
         }
 
-        //If the player gets all 3 computer codes, show the win menu
-        if(playerScript.codeCounter == 3)
+        if (sceneName == "scene2")
         {
-            ShowWinMenu();
+            if (fovScript.lostGame || fovScript2.lostGame || fovScript3.lostGame || fovScript4.lostGame)
+            {
+                ShowGameOverMenu();
+            }
+        }
+
+        if (sceneName == "scene2")
+        {
+            //If the player gets all 3 computer codes, show the win menu
+            if(playerScript.codeCounter == 3)
+            {
+                ShowWinMenu();
+            }
+        }
+
+        if (sceneName == "scene2")
+        {
+            HideStartMenu();
         }
     }
 
@@ -159,5 +209,14 @@ public class menus : MonoBehaviour
         fovScript2 = fovScriptGetter2.GetComponent<FieldOfView>();
         fovScript3 = fovScriptGetter3.GetComponent<FieldOfView>();
         fovScript4 = fovScriptGetter4.GetComponent<FieldOfView>();
+    }
+
+    void GetFovOfAllGuardsLevel1()
+    {
+        fovScriptGetter = GameObject.Find("pivotviewpoint");
+        fovScriptGetter3 = GameObject.Find("pivotviewpoint (1)");
+
+        fovScript = fovScriptGetter.GetComponent<FieldOfView>();
+        fovScript3 = fovScriptGetter3.GetComponent<FieldOfView>();
     }
 }

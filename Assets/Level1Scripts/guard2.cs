@@ -2,13 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
+using UnityEngine.SceneManagement;
 
-public class guard : MonoBehaviour
+public class guard2 : MonoBehaviour
 {
     public Transform[] waypoints;
     int currentWaypointID = 0;
-    //enum EnemyState { Patrol, Pursue };
-    //EnemyState currentState = EnemyState.Patrol;
     Path path;
     float nextWaypointDistance = 1f;
     float distance;
@@ -17,17 +16,27 @@ public class guard : MonoBehaviour
     GameObject waypoint;
     GameObject viewpoint;
 
+    MazeMinigame mazeScript;
+    GameObject mazeScriptGetter;
+
+    string sceneName;
+
     // Start is called before the first frame update
     void Start()
     {
-        waypoint = GameObject.Find("waypointMarker");
-        viewpoint = GameObject.Find("pivotviewpoint");
+        Scene currentScene = SceneManager.GetActiveScene();
+        sceneName = currentScene.name;
 
+        waypoint = GameObject.Find("waypointMarker2");
+        viewpoint = GameObject.Find("pivotviewpoint2");
+
+        mazeScriptGetter = GameObject.Find("MazeGame");
+        mazeScript = mazeScriptGetter.GetComponent<MazeMinigame>();
     }
 
     private void RotateTowardsTarget()
     {
-        float rotationSpeed = 3f;
+        float rotationSpeed = 1f;
         float offset = 90f;
         Vector3 direction = -(waypoint.transform.position - transform.position);
         direction.Normalize();
@@ -41,9 +50,31 @@ public class guard : MonoBehaviour
     void Update()
     {
         RotateTowardsTarget();
-        
+
         distance = Vector2.Distance(GetComponent<Rigidbody2D>().position, waypoint.transform.position);
-        
+
+        //Minigames only appear in the second level
+        if (sceneName == "scene2")
+        {
+            if (!mazeScript.mazeGameOngoing)
+            {
+                GuardMove();
+            }
+            else
+            {
+                //If minigame is ongoing, pause movement of guards
+                waypoint.transform.position = GetComponent<Rigidbody2D>().position;
+            }
+        }
+
+        if (sceneName == "scene1")
+        {
+            GuardMove();
+        }
+    }
+
+    void GuardMove()
+    {
         if (distance < nextWaypointDistance)
         {
             if (currentWaypointID <= waypoints.Length)
@@ -54,8 +85,7 @@ public class guard : MonoBehaviour
             {
                 currentWaypointID = 0;
             }
-            waypoint.transform.position = waypoints[currentWaypointID].transform.position; 
+            waypoint.transform.position = waypoints[currentWaypointID].transform.position;
         }
-
     }
 }

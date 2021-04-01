@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Interactable
   - Enemy
+  - MazeWalls
+  - disableDuringMinigame
+  - minigamePlayer
   layers:
   - Default
   - TransparentFX
