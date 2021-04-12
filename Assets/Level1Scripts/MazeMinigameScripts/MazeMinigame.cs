@@ -13,6 +13,7 @@ public class MazeMinigame : MonoBehaviour
     GameObject[] mazeWalls;
     GameObject[] rigidbodyObjects;
     GameObject mainPlayer;
+    player playerScript;
     GameObject mazePlayer;
     GameObject star;
     public Slider timer;
@@ -34,14 +35,18 @@ public class MazeMinigame : MonoBehaviour
         Scene currentScene = SceneManager.GetActiveScene();
         sceneName = currentScene.name;
 
-        computerScriptGetter = GameObject.Find("Computer");
-        computerScript = computerScriptGetter.GetComponent<computer>();
+        if (sceneName == "scene2")
+        {
+            computerScriptGetter = GameObject.Find("Computer");
+            computerScript = computerScriptGetter.GetComponent<computer>();
+        }
 
         mazeGame = GameObject.Find("MazeGame");
         mazeMap = GameObject.Find("MazeGameMap");
         mazePlayer = GameObject.Find("mazePlayer");
         timer = GameObject.Find("timer").GetComponent<Slider>();
         mainPlayer = GameObject.Find("testPlayer");
+        playerScript = mainPlayer.GetComponent<player>();
         star = GameObject.Find("mazeStar");
         mazeWalls = GameObject.FindGameObjectsWithTag("MazeWalls");
         rigidbodyObjects = GameObject.FindGameObjectsWithTag("disableDuringMinigame");
@@ -88,7 +93,6 @@ public class MazeMinigame : MonoBehaviour
         star.GetComponent<Rigidbody2D>().simulated = true;
         for (int i = 0; i < mazeWalls.Length; i++)
         {
-            print(mazeWalls.Length);
             mazeWalls[i].GetComponent<SpriteRenderer>().color = new Color(0f, 0.67f, 0.55f, 1f);
             mazeWalls[i].GetComponent<Rigidbody2D>().simulated = true;
         }
@@ -103,6 +107,7 @@ public class MazeMinigame : MonoBehaviour
 
         if (timer.value == 0)
         {
+            playerScript.codeCounter--;
             mazeGameOngoing = false;
         }
 

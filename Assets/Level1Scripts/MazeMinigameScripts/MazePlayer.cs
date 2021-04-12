@@ -8,7 +8,7 @@ public class MazePlayer : MonoBehaviour
     GameObject player, mazeScriptGetter, playerSprite;
     MazeMinigame mazeScript;
     Vector3 pos;
-    float speed = 0.002f;
+    float speed = 0.006f;
     string sceneName;
 
     // Start is called before the first frame update
@@ -31,7 +31,7 @@ public class MazePlayer : MonoBehaviour
             playerSprite.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 0f);
         }
 
-        if (sceneName == "scene2")
+        if (sceneName == "scene2" || sceneName == "scene3")
         {
             pos = transform.localPosition;
             if (!mazeScript.mazeGameOngoing)

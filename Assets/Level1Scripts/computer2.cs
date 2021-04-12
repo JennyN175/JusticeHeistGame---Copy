@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class computer2 : MonoBehaviour
 {
     bool hasCollided = false;
-    bool hasBeenCollected = false;
+    public bool hasBeenCollected = false;
     GameObject ePrompt2;
     GameObject ePromptSprite2;
     GameObject thePlayer;
@@ -17,6 +17,10 @@ public class computer2 : MonoBehaviour
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
 
     string sceneName;
+
+    string letterClue;
+    public TMPro.TextMeshProUGUI letterClueText;
+    Vault vaultScript;
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -62,6 +66,7 @@ public class computer2 : MonoBehaviour
         ePromptSprite2 = GameObject.Find("ePromptSprite2");
         thePlayer = GameObject.FindGameObjectWithTag("Player");
         playerScript = thePlayer.GetComponent<player>();
+        vaultScript = GameObject.FindGameObjectWithTag("Player").GetComponent<Vault>();
 
         if (sceneName == "scene1")
         {
@@ -71,6 +76,7 @@ public class computer2 : MonoBehaviour
         if (sceneName == "scene2")
         {
             GetFovOfAllGuards();
+            letterClueText.text = "";
         }
 
         ePrompt2.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
@@ -115,6 +121,31 @@ public class computer2 : MonoBehaviour
         {
             ePromptSprite2.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
             hasBeenCollected = false;
+        }
+
+        if (sceneName == "scene2")
+        {
+            if (hasBeenCollected) //will change later when minigame is added
+            {
+                switch (Vault.vaultWord)
+                {
+                    case "rob":
+                        letterClue = "O"; break;
+                    case "win":
+                        letterClue = "I"; break;
+                    case "hid":
+                        letterClue = "I"; break;
+                    case "gem":
+                        letterClue = "E"; break;
+                }
+            }
+
+            if (vaultScript.clueReceived)
+            {
+                
+                 letterClueText.text = "" + letterClue;
+                
+            }
         }
     }
 

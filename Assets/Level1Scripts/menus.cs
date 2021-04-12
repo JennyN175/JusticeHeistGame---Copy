@@ -18,13 +18,21 @@ public class menus : MonoBehaviour
 
     FieldOfView fovScript, fovScript2, fovScript3, fovScript4;
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
+    CameraFOV cameraFOV, cameraFOV2, cameraFOV3;
+    Laser laserScript;
+    VaultCode vaultCode;
 
     string sceneName;
+
+    GameObject[] laserSet1;
+    Laser[] laserSet1Scripts;
 
     //public AudioSource caughtAudio, winAudio;
     // Start is called before the first frame update
     void Start()
     {
+        laserSet1Scripts = new Laser[7];
+
         Scene currentScene = SceneManager.GetActiveScene();
         sceneName = currentScene.name;
 
@@ -56,6 +64,16 @@ public class menus : MonoBehaviour
         if (sceneName == "scene2")
         {
             GetFovOfAllGuards();
+        }
+
+        if (sceneName == "scene3")
+        {
+            vaultCode = GameObject.Find("Vault").GetComponent<VaultCode>();
+            laserSet1 = GameObject.FindGameObjectsWithTag("Lasers1");
+            for (int i = 0; i < laserSet1.Length; i++)
+            {
+                laserSet1Scripts[i] = laserSet1[i].GetComponent<Laser>();
+            }
         }
 
         //Add button listeners
@@ -116,12 +134,36 @@ public class menus : MonoBehaviour
             {
                 HideGameOverMenu();
                 HideWinMenu();
-                SceneManager.LoadScene("scene1");
+                SceneManager.LoadScene("scene2");
                 playerScript.codeCounter = 0;
                 fovScript.lostGame = false;
                 fovScript2.lostGame = false;
                 fovScript3.lostGame = false;
                 fovScript4.lostGame = false;
+                gameRestarted = false;
+            }
+        }
+
+        if (sceneName == "scene3")
+        {
+            if (gameRestarted)
+            {
+                HideGameOverMenu();
+                HideWinMenu();
+                playerScript.codeCounter = 0;
+                if (vaultCode.codeIsCorrect)
+                {
+                    SceneManager.LoadScene("scene1");
+                }
+                else
+                {
+                    SceneManager.LoadScene("scene3");
+                }
+                
+                /*fovScript.lostGame = false;
+                fovScript2.lostGame = false;
+                fovScript3.lostGame = false;
+                fovScript4.lostGame = false;*/
                 gameRestarted = false;
             }
         }
@@ -137,22 +179,33 @@ public class menus : MonoBehaviour
 
         if (sceneName == "scene2")
         {
-            if (fovScript.lostGame || fovScript2.lostGame || fovScript3.lostGame || fovScript4.lostGame)
+            if (fovScript.lostGame || fovScript2.lostGame || fovScript3.lostGame || fovScript4.lostGame || cameraFOV.lostGame || cameraFOV2.lostGame || cameraFOV3.lostGame)
             {
                 ShowGameOverMenu();
             }
         }
 
-        if (sceneName == "scene2")
+        if (sceneName == "scene3")
+        {
+            for (int i = 0; i < laserSet1.Length; i++)
+            {
+                if (laserSet1Scripts[i].touchedLaser)
+                {
+                    ShowGameOverMenu();
+                }
+            }
+        }
+
+        if (sceneName == "scene3") //2, switched it to 3
         {
             //If the player gets all 3 computer codes, show the win menu
-            if(playerScript.codeCounter == 3)
+            if(vaultCode.codeIsCorrect) //will change this because you dont need codes anymore
             {
                 ShowWinMenu();
             }
         }
 
-        if (sceneName == "scene2")
+        if (sceneName == "scene2" || sceneName == "scene3")
         {
             HideStartMenu();
         }
@@ -209,6 +262,10 @@ public class menus : MonoBehaviour
         fovScript2 = fovScriptGetter2.GetComponent<FieldOfView>();
         fovScript3 = fovScriptGetter3.GetComponent<FieldOfView>();
         fovScript4 = fovScriptGetter4.GetComponent<FieldOfView>();
+
+        cameraFOV = GameObject.Find("cameraViewPoint").GetComponent<CameraFOV>();
+        cameraFOV2 = GameObject.Find("cameraViewPoint2").GetComponent<CameraFOV>();
+        cameraFOV3 = GameObject.Find("cameraViewPoint3").GetComponent<CameraFOV>();
     }
 
     void GetFovOfAllGuardsLevel1()

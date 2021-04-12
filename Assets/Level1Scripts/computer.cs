@@ -18,9 +18,13 @@ public class computer : MonoBehaviour
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
 
     MazeMinigame mazeScript;
+    Vault vaultScript;
     GameObject mazeScriptGetter;
 
     string sceneName;
+
+    string letterClue;
+    public TMPro.TextMeshProUGUI letterClueText;
 
     //If player is near computer, ePrompt shows
     void OnCollisionEnter2D(Collision2D col)
@@ -73,6 +77,8 @@ public class computer : MonoBehaviour
         mazeScriptGetter = GameObject.Find("MazeGame");
         mazeScript = mazeScriptGetter.GetComponent<MazeMinigame>();
 
+        vaultScript = GameObject.FindGameObjectWithTag("Player").GetComponent<Vault>();
+
         if (sceneName == "scene1")
         {
             GetFovOfAllGuardsLevel1();
@@ -81,9 +87,11 @@ public class computer : MonoBehaviour
         if (sceneName == "scene2")
         {
             GetFovOfAllGuards();
+            letterClueText.text = "";
         }
 
         ePrompt.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+        
     }
 
     // Update is called once per frame
@@ -94,7 +102,7 @@ public class computer : MonoBehaviour
         //Player collects computer code if collided with object while pressing "E"
         if (hasCollided && Input.GetKeyDown(KeyCode.E) && !hasBeenCollected)
         {
-            Debug.Log("collected");
+            //Debug.Log("collected");
             playerScript.codeCounter++;
 
             //Test timer- will put on actual minigame prompt later
@@ -106,6 +114,29 @@ public class computer : MonoBehaviour
             if (mazeScript.gameOngoing)
             {
                 print("maze game happening right now");
+            }
+        }
+
+        if (sceneName == "scene2")
+        {
+            if (mazeScript.endGame)
+            {
+                switch (Vault.vaultWord)
+                {
+                    case "rob":
+                        letterClue = "B"; break;
+                    case "win":
+                        letterClue = "N"; break;
+                    case "hid":
+                        letterClue = "D"; break;
+                    case "gem":
+                        letterClue = "M"; break;
+                }
+            }
+
+            if (vaultScript.clueReceived)
+            {
+                letterClueText.text = "" + letterClue;
             }
         }
 

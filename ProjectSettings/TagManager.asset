@@ -9,6 +9,7 @@ TagManager:
   - MazeWalls
   - disableDuringMinigame
   - minigamePlayer
+  - Lasers1
   layers:
   - Default
   - TransparentFX

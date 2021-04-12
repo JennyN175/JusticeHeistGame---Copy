@@ -14,9 +14,9 @@ public class player : MonoBehaviour
     public bool hasWon = false;
     public int codeCounter = 0;
     float instructionDisappearDistance;
-    Vector3 startPos;
-    Vector3 pos;
-    Vector3 restartPos;
+    Vector2 startPos;
+    Vector2 pos;
+    Vector2 restartPos;
 
     float sprintSpeed = 0.16f;
     float sprintStartTime;
@@ -31,8 +31,11 @@ public class player : MonoBehaviour
 
     FieldOfView fovScript, fovScript2, fovScript3, fovScript4;
     GameObject fovScriptGetter, fovScriptGetter2, fovScriptGetter3, fovScriptGetter4;
+    CameraFOV cameraFOV, cameraFOV2, cameraFOV3;
+    Laser laserScript;
     MazeMinigame mazeScript;
     GameObject mazeScriptGetter;
+    VaultCode vaultCode;
 
     public AudioSource audioSource;
 
@@ -41,9 +44,13 @@ public class player : MonoBehaviour
 
     string sceneName;
 
+    GameObject[] laserSet1;
+    Laser[] laserSet1Scripts;
+
     // Start is called before the first frame update
     void Start()
     {
+        laserSet1Scripts = new Laser[7];
         Scene currentScene = SceneManager.GetActiveScene();
         sceneName = currentScene.name;
 
@@ -54,8 +61,11 @@ public class player : MonoBehaviour
         {
             showWASDInstructionsOnce = true; //show WASD instructions on start
         }
-            
+
+
         startPos = transform.position;
+
+        transform.position = startPos;
         playerChar = GameObject.FindGameObjectWithTag("Player");
         wasdPrompt = GameObject.Find("wasd_prompt");
 
@@ -77,12 +87,26 @@ public class player : MonoBehaviour
         {
             GetFovOfAllGuards();
         }
+
+        if (sceneName == "scene3")
+        {
+            vaultCode = GameObject.Find("Vault").GetComponent<VaultCode>();
+            laserSet1 = GameObject.FindGameObjectsWithTag("Lasers1");
+            for (int i = 0; i < laserSet1.Length; i++)
+            {
+                laserSet1Scripts[i] = laserSet1[i].GetComponent<Laser>();
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        counterText.text = "" + codeCounter;
+        if (sceneName != "scene3")
+        {
+            counterText.text = "" + codeCounter;
+        }
+
         pos = transform.position;
         restartPos = new Vector3(4.6f, -23.86f, -0.4f);
 
@@ -131,7 +155,7 @@ public class player : MonoBehaviour
         if (sceneName == "scene2")
         {
             //If player lost the game, return to the start position
-            if ((fovScript.lostGame == true) || (fovScript2.lostGame == true) || (fovScript3.lostGame == true) || (fovScript4.lostGame == true))
+            if ((fovScript.lostGame == true) || (fovScript2.lostGame == true) || (fovScript3.lostGame == true) || (fovScript4.lostGame == true) || (cameraFOV.lostGame == true) || (cameraFOV2.lostGame == true) || (cameraFOV3.lostGame == true))
             {
                 sprintTimer.enabled = false;
                 sprintImg.enabled = false;
@@ -140,13 +164,27 @@ public class player : MonoBehaviour
             }
         }
 
-        //If player won the game, return to the start position
-        if (sceneName == "scene2") 
+        if(sceneName == "scene3")
         {
-            if (hasWon)
+            for (int i = 0; i < laserSet1.Length; i++)
+            {
+                if (laserSet1Scripts[i].touchedLaser)
+                {
+                    sprintTimer.enabled = false;
+                    sprintImg.enabled = false;
+                    codeCounter = 0;
+                    pos = restartPos;
+                }
+            }
+        }
+
+        //If player won the game
+        if (sceneName == "scene3") 
+        {
+            if (vaultCode.codeIsCorrect)
             {
                 print("youve won!!");
-                pos = restartPos;
+                //pos = restartPos;
                 hasWon = false;
             }
         }
@@ -181,7 +219,7 @@ public class player : MonoBehaviour
             {
                 sprintTimer.enabled = true;
                 sprintImg.enabled = true;
-                pos += Vector3.up * sprintSpeed;
+                pos += Vector2.up * sprintSpeed;
             }
             else
             {
@@ -189,7 +227,7 @@ public class player : MonoBehaviour
                 {
                     sprintTimer.enabled = false;
                     sprintImg.enabled = false;
-                    pos += Vector3.up * speed;
+                    pos += Vector2.up * speed;
                 }
             }
             
@@ -204,7 +242,7 @@ public class player : MonoBehaviour
             {
                 sprintTimer.enabled = true;
                 sprintImg.enabled = true;
-                pos += Vector3.down * sprintSpeed;
+                pos += Vector2.down * sprintSpeed;
             }
             else
             {
@@ -212,7 +250,7 @@ public class player : MonoBehaviour
                 {
                     sprintTimer.enabled = false;
                     sprintImg.enabled = false;
-                    pos += Vector3.down * speed;
+                    pos += Vector2.down * speed;
                 }
             }
 
@@ -227,7 +265,7 @@ public class player : MonoBehaviour
             {
                 sprintTimer.enabled = true;
                 sprintImg.enabled = true;
-                pos += Vector3.right * sprintSpeed;
+                pos += Vector2.right * sprintSpeed;
             }
             else
             {
@@ -235,7 +273,7 @@ public class player : MonoBehaviour
                 {
                     sprintTimer.enabled = false;
                     sprintImg.enabled = false;
-                    pos += Vector3.right * speed;
+                    pos += Vector2.right * speed;
                 }
             }
 
@@ -250,7 +288,7 @@ public class player : MonoBehaviour
             {
                 sprintTimer.enabled = true;
                 sprintImg.enabled = true;
-                pos += Vector3.left * sprintSpeed;
+                pos += Vector2.left * sprintSpeed;
             }
             else
             {
@@ -258,7 +296,7 @@ public class player : MonoBehaviour
                 {
                     sprintTimer.enabled = false;
                     sprintImg.enabled = false;
-                    pos += Vector3.left * speed;
+                    pos += Vector2.left * speed;
                 }
             }
 
@@ -285,6 +323,7 @@ public class player : MonoBehaviour
         transform.position = pos;
     }
 
+
     void GetFovOfAllGuards()
     {
         fovScriptGetter = GameObject.Find("pivotviewpoint");
@@ -296,6 +335,10 @@ public class player : MonoBehaviour
         fovScript2 = fovScriptGetter2.GetComponent<FieldOfView>();
         fovScript3 = fovScriptGetter3.GetComponent<FieldOfView>();
         fovScript4 = fovScriptGetter4.GetComponent<FieldOfView>();
+
+        cameraFOV = GameObject.Find("cameraViewPoint").GetComponent<CameraFOV>();
+        cameraFOV2 = GameObject.Find("cameraViewPoint2").GetComponent<CameraFOV>();
+        cameraFOV3 = GameObject.Find("cameraViewPoint3").GetComponent<CameraFOV>();
     }
 
     void GetFovOfAllGuardsLevel1()
