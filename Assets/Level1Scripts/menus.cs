@@ -21,6 +21,7 @@ public class menus : MonoBehaviour
     public bool cutsceneOngoing = true;
     static bool level2AudioPlayed = false;
     static bool level3AudioPlayed = false;
+    //bool endCutscene = false;
 
     GameObject thePlayer;
     player playerScript;
@@ -193,6 +194,16 @@ public class menus : MonoBehaviour
         if (gameStarted)
         {
             HideStartMenu();
+        }
+
+        if (sceneName == "scene1")
+        {
+            if (Input.GetKey("space"))
+            {
+                StopCoroutine("ShowCutscene");
+                cutscene.enabled = false;
+                cutsceneOngoing = false;
+            }
         }
 
         //If the player restarts the game after losing, hide game over menu and reset the game
