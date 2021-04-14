@@ -44,7 +44,7 @@ public class MazePlayer : MonoBehaviour
             if (mazeScript.mazeGameOngoing)
             {
                 player.GetComponent<Rigidbody2D>().simulated = true;
-                playerSprite.GetComponent<SpriteRenderer>().color = new Color(1f, 0f, 0f, 1f);
+                playerSprite.GetComponent<SpriteRenderer>().color = new Color(1f, 0.9411916f, 0f, 1f);
 
                 PlayerMove();
             }
@@ -73,7 +73,5 @@ public class MazePlayer : MonoBehaviour
         }
 
         player.transform.localPosition = new Vector3(pos.x, pos.y, -0.4f);
-        //transform.position = pos;
-        //transform.localPosition = pos;
     }
 }

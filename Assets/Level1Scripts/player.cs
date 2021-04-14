@@ -9,6 +9,7 @@ public class player : MonoBehaviour
     public GameObject playerChar;
     public GameObject wasdPrompt;
     public TMPro.TextMeshProUGUI counterText;
+    public TMPro.TextMeshProUGUI objectiveText;
     float speed = 0.08f;
     bool showWASDInstructionsOnce;
     public bool hasWon = false;
@@ -35,7 +36,13 @@ public class player : MonoBehaviour
     Laser laserScript;
     MazeMinigame mazeScript;
     GameObject mazeScriptGetter;
+    GameObject ventDoor;
     VaultCode vaultCode;
+    menus menuScript;
+    computer computer1;
+    computer2 computer2;
+    computer3 computer3;
+    Vault vault;
 
     public AudioSource audioSource;
 
@@ -45,12 +52,15 @@ public class player : MonoBehaviour
     string sceneName;
 
     GameObject[] laserSet1;
+    GameObject[] laserSet2;
     Laser[] laserSet1Scripts;
+    Laser[] laserSet2Scripts;
 
     // Start is called before the first frame update
     void Start()
     {
         laserSet1Scripts = new Laser[7];
+        laserSet2Scripts = new Laser[7];
         Scene currentScene = SceneManager.GetActiveScene();
         sceneName = currentScene.name;
 
@@ -71,6 +81,7 @@ public class player : MonoBehaviour
 
         mazeScriptGetter = GameObject.Find("MazeGame");
         mazeScript = mazeScriptGetter.GetComponent<MazeMinigame>();
+        menuScript = GameObject.Find("playButton").GetComponent<menus>();
 
         sprintTimer = GameObject.Find("sprintTimer").GetComponent<Image>();
         sprintImg = GameObject.Find("sprintImage").GetComponent<Image>();
@@ -81,10 +92,17 @@ public class player : MonoBehaviour
         if (sceneName == "scene1")
         {
             GetFovOfAllGuardsLevel1();
+            ventDoor = GameObject.Find("ventDoor");
+            ventDoor.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+            ventDoor.GetComponent<Rigidbody2D>().simulated = false;
         }
 
         if (sceneName == "scene2")
         {
+            computer1 = GameObject.Find("Computer").GetComponent<computer>();
+            computer2 = GameObject.Find("Computer2").GetComponent<computer2>();
+            computer3 = GameObject.Find("Computer3").GetComponent<computer3>();
+            vault = GetComponent<Vault>();
             GetFovOfAllGuards();
         }
 
@@ -92,16 +110,47 @@ public class player : MonoBehaviour
         {
             vaultCode = GameObject.Find("Vault").GetComponent<VaultCode>();
             laserSet1 = GameObject.FindGameObjectsWithTag("Lasers1");
+            laserSet2 = GameObject.FindGameObjectsWithTag("Lasers2");
             for (int i = 0; i < laserSet1.Length; i++)
             {
                 laserSet1Scripts[i] = laserSet1[i].GetComponent<Laser>();
             }
+
+            for (int i = 0; i < laserSet2.Length; i++)
+            {
+                laserSet2Scripts[i] = laserSet2[i].GetComponent<Laser>();
+            }
         }
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        ///////////////CHEAT CODES//////////////////
+        switch (sceneName)
+        {
+            case "scene1":
+                if (Input.GetKey("="))
+                {
+                    codeCounter = 3;
+                }
+                break;
+            case "scene2":
+                if (Input.GetKey("="))
+                {
+                    codeCounter = 3;
+                }
+                break;
+            case "scene3":
+                if (Input.GetKey("="))
+                {
+                    transform.position = new Vector3(33.36f, 19.27f, 0);
+                }
+                break;
+        }
+        ////////////////////////////////////////////
+
         if (sceneName != "scene3")
         {
             counterText.text = "" + codeCounter;
@@ -119,6 +168,16 @@ public class player : MonoBehaviour
 
         if (sceneName == "scene1")
         {
+            if (hasWon)
+            {
+                objectiveText.text = "Objective: Find the door that leads to the second floor";
+            }
+
+            if (menuScript.cutsceneOngoing)
+            {
+                pos = restartPos;
+            }
+
             //If the player has just started the game, show WASD instructions
             if (showWASDInstructionsOnce)
             {
@@ -126,19 +185,28 @@ public class player : MonoBehaviour
                 if (instructionDisappearDistance < 5f)
                 {
                     audioSource.Play(); //Plays audio when player moves past certain point (will modify and fix this later)
-
                 }
             }
 
             //WASD instructions disappear after player travels 5f distance
             if (instructionDisappearDistance > 5f)
             {
+                ventDoor.GetComponent<SpriteRenderer>().color = new Color(0.1949f, 0.2141f, 0.2924f, 1f);
+                ventDoor.GetComponent<Rigidbody2D>().simulated = true;
                 wasdPrompt.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
             }
         }
         else
         {
             wasdPrompt.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+        }
+
+        if (sceneName == "scene2")
+        {
+            if (vault.mazeFinished && computer2.hasBeenCollected && computer3.hasBeenCollected)
+            {
+                objectiveText.text = "Objective: Find the elevator that leads to the third floor";
+            }
         }
 
         if (sceneName == "scene1")
@@ -148,7 +216,7 @@ public class player : MonoBehaviour
                 sprintTimer.enabled = false;
                 sprintImg.enabled = false;
                 codeCounter = 0;
-                pos = restartPos;
+                pos = new Vector3(4.6f, -16.89f, -0.4f);
             }
         }
 
@@ -169,6 +237,17 @@ public class player : MonoBehaviour
             for (int i = 0; i < laserSet1.Length; i++)
             {
                 if (laserSet1Scripts[i].touchedLaser)
+                {
+                    sprintTimer.enabled = false;
+                    sprintImg.enabled = false;
+                    codeCounter = 0;
+                    pos = restartPos;
+                }
+            }
+
+            for (int i = 0; i < laserSet2.Length; i++)
+            {
+                if (laserSet2Scripts[i].touchedLaser)
                 {
                     sprintTimer.enabled = false;
                     sprintImg.enabled = false;

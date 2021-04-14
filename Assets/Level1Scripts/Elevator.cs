@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Elevator : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class Elevator : MonoBehaviour
     bool hasCollided;
     GameObject thePlayer;
     player playerScript;
+    menus menuScript;
+    Image passScreen;
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -28,14 +31,28 @@ public class Elevator : MonoBehaviour
         }
     }
 
+    IEnumerator ShowWinScreen()
+    {
+        passScreen.enabled = true;
+        menuScript.cutsceneAudioSource.clip = menuScript.cutsceneAudio[1];
+        menuScript.cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(menuScript.cutsceneAudioSource.clip.length);
+        SceneManager.LoadScene("scene3");
+        DestroyAllGameObjects();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         elevatorPromptSprite = GameObject.Find("elevatorPromptSprite");
         thePlayer = GameObject.FindGameObjectWithTag("Player");
         playerScript = thePlayer.GetComponent<player>();
+        menuScript = GameObject.Find("playButton").GetComponent<menus>();
+        passScreen = GameObject.Find("passScreen").GetComponent<Image>();
 
         elevatorPromptSprite.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+
+        passScreen.enabled = false;
     }
 
     // Update is called once per frame
@@ -44,8 +61,9 @@ public class Elevator : MonoBehaviour
         if (hasCollided && Input.GetKeyDown(KeyCode.E) && playerScript.hasWon)
         {
             print("Enter elevator");
-            DestroyAllGameObjects();
-            SceneManager.LoadScene("scene3");
+            StartCoroutine("ShowWinScreen");
+            //DestroyAllGameObjects();
+            //SceneManager.LoadScene("scene3");
         }
     }
 

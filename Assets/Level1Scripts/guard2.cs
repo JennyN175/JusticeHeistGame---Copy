@@ -58,12 +58,14 @@ public class guard2 : MonoBehaviour
         {
             if (!mazeScript.mazeGameOngoing)
             {
+                GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
                 GuardMove();
             }
             else
             {
                 //If minigame is ongoing, pause movement of guards
-                waypoint.transform.position = GetComponent<Rigidbody2D>().position;
+                //waypoint.transform.position = GetComponent<Rigidbody2D>().position;
+                GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePosition;
             }
         }
 

@@ -18,6 +18,7 @@ public class guard : MonoBehaviour
 
     MazeMinigame mazeScript;
     GameObject mazeScriptGetter;
+    menus menuScript;
 
     string sceneName;
 
@@ -32,6 +33,7 @@ public class guard : MonoBehaviour
 
         mazeScriptGetter = GameObject.Find("MazeGame");
         mazeScript = mazeScriptGetter.GetComponent<MazeMinigame>();
+        menuScript = GameObject.Find("playButton").GetComponent<menus>();
     }
 
     private void RotateTowardsTarget()
@@ -58,18 +60,28 @@ public class guard : MonoBehaviour
         {
             if (!mazeScript.mazeGameOngoing) 
             {
+                GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
                 GuardMove();
             }
             else
             {
                 //If minigame is ongoing, pause movement of guards
-                waypoint.transform.position = GetComponent<Rigidbody2D>().position;
+                //waypoint.transform.position = GetComponent<Rigidbody2D>().position;
+                GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePosition;
             }
         }
 
         if (sceneName == "scene1")
         {
-            GuardMove();
+            if (!menuScript.cutsceneOngoing)
+            {
+                GuardMove();
+            }
+            else
+            {
+                waypoint.transform.position = GetComponent<Rigidbody2D>().position;
+            }
+            //GuardMove();
         }
     }
 

@@ -2,13 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Door : MonoBehaviour
 {
     GameObject doorPromptSprite;
+    Image passScreen;
     bool hasCollided;
     GameObject thePlayer;
     player playerScript;
+    menus menuScript;
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -29,14 +32,27 @@ public class Door : MonoBehaviour
         }
     }
 
+    IEnumerator ShowWinScreen()
+    {
+        passScreen.enabled = true;
+        menuScript.cutsceneAudioSource.clip = menuScript.cutsceneAudio[7];
+        menuScript.cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(menuScript.cutsceneAudioSource.clip.length);
+        SceneManager.LoadScene("scene2");
+        DestroyAllGameObjects();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         doorPromptSprite = GameObject.Find("doorPromptSprite");
         thePlayer = GameObject.FindGameObjectWithTag("Player");
         playerScript = thePlayer.GetComponent<player>();
+        passScreen = GameObject.Find("passScreen").GetComponent<Image>();
+        menuScript = GameObject.Find("playButton").GetComponent<menus>();
 
         doorPromptSprite.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+        passScreen.enabled = false;
     }
 
     // Update is called once per frame
@@ -45,8 +61,10 @@ public class Door : MonoBehaviour
         if (hasCollided && Input.GetKeyDown(KeyCode.E) && playerScript.hasWon)
         {
             print("Enter door");
-            DestroyAllGameObjects();
-            SceneManager.LoadScene("scene2");
+            StartCoroutine("ShowWinScreen");
+            //DestroyAllGameObjects();
+            
+            //SceneManager.LoadScene("scene2");
         }
     }
 

@@ -58,7 +58,7 @@ public class MazeMinigame : MonoBehaviour
     {
         if (sceneName == "scene2")
         {
-            if (!computerScript.hasBeenCollected) //Testing minigame with the computer for now
+            if (!computerScript.hasBeenCollected) 
             {
                 endGame = false;
                 mazeGameOngoing = false;
@@ -87,16 +87,19 @@ public class MazeMinigame : MonoBehaviour
     {
         mazeGame.transform.position = new Vector3(player.position.x, player.position.y, distanceFromCamera);
         star.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
-        mazeMap.GetComponent<SpriteRenderer>().color = new Color(0.1f, 0.16f, 0.34f, 1f);
+        mazeMap.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
         mainPlayer.GetComponent<Rigidbody2D>().simulated = false;
         mazePlayer.GetComponent<Rigidbody2D>().simulated = true;
         star.GetComponent<Rigidbody2D>().simulated = true;
+
+        //Show maze and enable rigidbodies
         for (int i = 0; i < mazeWalls.Length; i++)
         {
-            mazeWalls[i].GetComponent<SpriteRenderer>().color = new Color(0f, 0.67f, 0.55f, 1f);
+            mazeWalls[i].GetComponent<SpriteRenderer>().color = new Color(0.1887979f, 0.7930654f, 0.8113208f, 1f);
             mazeWalls[i].GetComponent<Rigidbody2D>().simulated = true;
         }
 
+        //Disable rigidbodies of the main level so that nothing interferes with the minigame
         for(int i = 0; i < rigidbodyObjects.Length; i++)
         {
             rigidbodyObjects[i].GetComponent<Rigidbody2D>().simulated = false;
@@ -107,6 +110,7 @@ public class MazeMinigame : MonoBehaviour
 
         if (timer.value == 0)
         {
+            //If timer runs out, take back the point
             playerScript.codeCounter--;
             mazeGameOngoing = false;
         }
@@ -121,12 +125,15 @@ public class MazeMinigame : MonoBehaviour
         mainPlayer.GetComponent<Rigidbody2D>().simulated = true;
         mazePlayer.GetComponent<Rigidbody2D>().simulated = false;
         star.GetComponent<Rigidbody2D>().simulated = false;
+
+        //Hide and disable minigame rigidbodies
         for (int i = 0; i < mazeWalls.Length; i++)
         {
             mazeWalls[i].GetComponent<SpriteRenderer>().color = new Color(0f, 0.67f, 0.55f, 0f);
             mazeWalls[i].GetComponent<Rigidbody2D>().simulated = false;
         }
 
+        //Enable rigidbodies of the main level
         for (int i = 0; i < rigidbodyObjects.Length; i++)
         {
             rigidbodyObjects[i].GetComponent<Rigidbody2D>().simulated = true;

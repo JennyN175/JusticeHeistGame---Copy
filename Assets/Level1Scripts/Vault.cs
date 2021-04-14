@@ -26,6 +26,7 @@ public class Vault : MonoBehaviour
     float normalizedValue;
 
     public bool clueReceived = false;
+    public bool mazeFinished = false;
 
 
     // Start is called before the first frame update
@@ -57,13 +58,12 @@ public class Vault : MonoBehaviour
             clueNotification.enabled = false;
         }
 
-        //clueImage.enabled = false;
-        //clueNotification.enabled = false;
 
         startPos = new Vector3(-205.5f, 758, 0);
         endPos = new Vector3(450, 758, 0);
     }
 
+    //Clue notification animation
     IEnumerator ShowClue()
     {
         clueNotification.enabled = true;
@@ -90,6 +90,7 @@ public class Vault : MonoBehaviour
         clueReceived = true;
         yield return new WaitForSeconds(1);
         mazeScript.endGame = false;
+        mazeFinished = true;
     }
 
     // Update is called once per frame

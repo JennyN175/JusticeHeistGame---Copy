@@ -8,10 +8,19 @@ public class menus : MonoBehaviour
 {
     public float starttime;
 
+    public Image cutscene;
+    public Sprite cutscene1, cutscene2, cutscene3, cutscene4, cutscene5, cutscene6;
+    public AudioClip[] cutsceneAudio;
+    public AudioSource cutsceneAudioSource;
+    public AudioSource winAudio;
+
     Image mainMenu, bgImage, playButtonImg, gameOverMenu, restartButtonImg, winMenu, replayButtonImg;
     Button playButton, restartButton, replayButton;
     public bool gameStarted = false;
     public bool gameRestarted = false;
+    public bool cutsceneOngoing = true;
+    static bool level2AudioPlayed = false;
+    static bool level3AudioPlayed = false;
 
     GameObject thePlayer;
     player playerScript;
@@ -26,12 +35,17 @@ public class menus : MonoBehaviour
 
     GameObject[] laserSet1;
     Laser[] laserSet1Scripts;
+    GameObject[] laserSet2;
+    Laser[] laserSet2Scripts;
 
     //public AudioSource caughtAudio, winAudio;
     // Start is called before the first frame update
     void Start()
     {
+        cutscene.enabled = false;
+        
         laserSet1Scripts = new Laser[7];
+        laserSet2Scripts = new Laser[7];
 
         Scene currentScene = SceneManager.GetActiveScene();
         sceneName = currentScene.name;
@@ -63,17 +77,38 @@ public class menus : MonoBehaviour
 
         if (sceneName == "scene2")
         {
+            if (!level2AudioPlayed)
+            {
+                cutsceneAudioSource.clip = cutsceneAudio[0];
+                cutsceneAudioSource.Play();
+                level2AudioPlayed = true;
+            }
+
             GetFovOfAllGuards();
         }
 
         if (sceneName == "scene3")
         {
+            if (!level3AudioPlayed)
+            {
+                cutsceneAudioSource.clip = cutsceneAudio[0];
+                cutsceneAudioSource.Play();
+                level3AudioPlayed = true;
+            }
+
             vaultCode = GameObject.Find("Vault").GetComponent<VaultCode>();
             laserSet1 = GameObject.FindGameObjectsWithTag("Lasers1");
+            laserSet2 = GameObject.FindGameObjectsWithTag("Lasers2");
             for (int i = 0; i < laserSet1.Length; i++)
             {
                 laserSet1Scripts[i] = laserSet1[i].GetComponent<Laser>();
             }
+
+            for (int i = 0; i < laserSet2.Length; i++)
+            {
+                laserSet2Scripts[i] = laserSet2[i].GetComponent<Laser>();
+            }
+
         }
 
         //Add button listeners
@@ -90,6 +125,11 @@ public class menus : MonoBehaviour
     public void playClicked()
     {
         print("play clicked!");
+        if (cutsceneOngoing)
+        {
+            //Play beginning cutscene when play button clicked
+            StartCoroutine("ShowCutscene");
+        }
         gameStarted = true;
     }
 
@@ -103,6 +143,47 @@ public class menus : MonoBehaviour
     {
         print("replay clicked!");
         gameRestarted = true;
+    }
+
+    //Beginning cutscene
+    IEnumerator ShowCutscene()
+    {
+        cutscene.enabled = true;
+        cutscene.sprite = cutscene1;
+        cutsceneAudioSource.clip = cutsceneAudio[0];
+        cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(cutsceneAudioSource.clip.length);
+
+        cutscene.sprite = cutscene2;
+        cutsceneAudioSource.clip = cutsceneAudio[1];
+        cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(cutsceneAudioSource.clip.length);
+
+        cutscene.sprite = cutscene3;
+        cutsceneAudioSource.clip = cutsceneAudio[2];
+        cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(cutsceneAudioSource.clip.length);
+
+        cutscene.sprite = cutscene4;
+        cutsceneAudioSource.clip = cutsceneAudio[3];
+        cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(cutsceneAudioSource.clip.length);
+
+        cutscene.sprite = cutscene5;
+        cutsceneAudioSource.clip = cutsceneAudio[4];
+        cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(cutsceneAudioSource.clip.length);
+
+        cutscene.sprite = cutscene6;
+        cutsceneAudioSource.clip = cutsceneAudio[5];
+        cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(cutsceneAudioSource.clip.length);
+        cutscene.enabled = false;
+        cutsceneAudioSource.clip = cutsceneAudio[6];
+        cutsceneAudioSource.Play();
+        yield return new WaitForSeconds(cutsceneAudioSource.clip.length);
+        
+        cutsceneOngoing = false;
     }
 
     // Update is called once per frame
@@ -125,6 +206,8 @@ public class menus : MonoBehaviour
                 fovScript.lostGame = false;
                 fovScript3.lostGame = false;
                 gameRestarted = false;
+                level2AudioPlayed = false;
+                level3AudioPlayed = false;
             }
         }
 
@@ -194,12 +277,20 @@ public class menus : MonoBehaviour
                     ShowGameOverMenu();
                 }
             }
+
+            for (int i = 0; i < laserSet2.Length; i++)
+            {
+                if (laserSet2Scripts[i].touchedLaser)
+                {
+                    ShowGameOverMenu();
+                }
+            }
         }
 
-        if (sceneName == "scene3") //2, switched it to 3
+        //If player has guessed vault password correctly, show the winning screen
+        if (sceneName == "scene3") 
         {
-            //If the player gets all 3 computer codes, show the win menu
-            if(vaultCode.codeIsCorrect) //will change this because you dont need codes anymore
+            if (vaultCode.codeIsCorrect) 
             {
                 ShowWinMenu();
             }

@@ -10,6 +10,7 @@ TagManager:
   - disableDuringMinigame
   - minigamePlayer
   - Lasers1
+  - Lasers2
   layers:
   - Default
   - TransparentFX
