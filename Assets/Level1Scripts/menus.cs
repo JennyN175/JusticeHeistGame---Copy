@@ -58,7 +58,7 @@ public class menus : MonoBehaviour
         playButton = GameObject.Find("playButton").GetComponent<Button>();
         playButtonImg = GameObject.Find("playButton").GetComponent<Image>();
         mainMenu = GameObject.Find("mainMenu").GetComponent<Image>();
-        bgImage = GameObject.Find("cutscene1").GetComponent<Image>();
+        bgImage = GameObject.Find("background").GetComponent<Image>();
 
         //Get game objects associated with win menu
         winMenu = GameObject.Find("winMenu").GetComponent<Image>();
